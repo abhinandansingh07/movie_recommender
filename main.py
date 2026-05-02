@@ -1,6 +1,9 @@
 import streamlit as st
 import pickle
 import pandas as pd
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 # -----------------------------
 # Recommendation Function
@@ -21,13 +24,21 @@ def recommend(movie):
     return recommended_movies
 
 
+@st.cache_resource
+def load_data():
+    with open(BASE_DIR / 'movie_dict.pkl', 'rb') as file:
+        movies_dict = pickle.load(file)
+
+    with open(BASE_DIR / 'similarity.pkl', 'rb') as file:
+        similarity_data = pickle.load(file)
+
+    return pd.DataFrame(movies_dict), similarity_data
+
+
 # -----------------------------
 # Load Data
 # -----------------------------
-movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
-movies = pd.DataFrame(movies_dict)
-
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+movies, similarity = load_data()
 
 # -----------------------------
 # Custom CSS
